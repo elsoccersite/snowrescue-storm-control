@@ -1,6 +1,6 @@
 {
   "name": "snowrescue-storm-control",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,12 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.19.9",
     "next": "16.2.11",
-    "react": "^19.1.7",
-    "react-dom": "^19.1.7"
-  },
-  "devDependencies": {
-    "wrangler": "^4.86.0"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   }
 }
