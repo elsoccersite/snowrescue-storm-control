@@ -144,7 +144,28 @@ export default function StormControlPage() {
     );
   }
 
-  const preset = config.presets.find((p) => p.value === state.messagePreset);
+  const primary = config.statusMessages[state.status];
+  const updateCandidate = state.messagePreset === config.defaultPresetByStatus[state.status] ? "none" : state.messagePreset;
+  const updateValue = config.operationalUpdates.some((option) => option.value === updateCandidate) ? updateCandidate : "none";
+  const updateText = updateValue === "custom"
+    ? state.customMessage.trim()
+    : (config.operationalUpdateMessages[updateValue] || "");
+
+  function selectStatus(value) {
+    patch({
+      status: value,
+      messagePreset: config.defaultPresetByStatus[value],
+      customMessage: ""
+    });
+  }
+
+  function selectOperationalUpdate(value) {
+    if (value === "none") {
+      patch({ messagePreset: config.defaultPresetByStatus[state.status], customMessage: "" });
+      return;
+    }
+    patch({ messagePreset: value, customMessage: value === "custom" ? state.customMessage : "" });
+  }
   return (
     <main>
       <header className="topbar">
@@ -167,7 +188,7 @@ export default function StormControlPage() {
             <section className="panel">
               <div className="panelHead"><div><div className="smallLabel">CURRENT OPERATING STATE</div><h2>Storm status</h2></div><span className="chip"><i />{config.statuses.find((s) => s.value === state.status)?.label}</span></div>
               <div className="statusGrid">
-                {config.statuses.map((s) => <button key={s.value} className={`statusButton ${state.status === s.value ? "selected" : ""}`} onClick={() => patch({ status: s.value })}>{s.label}</button>)}
+                {config.statuses.map((s) => <button key={s.value} type="button" className={`statusButton ${state.status === s.value ? "selected" : ""}`} onClick={() => selectStatus(s.value)}>{s.label}</button>)}
               </div>
 
               <Divider />
@@ -183,14 +204,15 @@ export default function StormControlPage() {
               <div className="areaGrid">{config.areaOptions.map((a) => <label key={a} className={`areaToggle ${state.activeAreas.includes(a) ? "on" : ""}`}><input type="checkbox" checked={state.activeAreas.includes(a)} onChange={() => toggleArea(a)} /><span>{a.toUpperCase()}</span></label>)}</div>
 
               <Divider />
-              <Field label="MESSAGE PRESET"><select value={state.messagePreset} onChange={(e) => patch({ messagePreset: e.target.value })}>{config.presets.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}</select></Field>
-              <Field label="CUSTOM MESSAGE — OPTIONAL" className="messageField"><textarea rows="4" maxLength="500" value={state.customMessage} onChange={(e) => patch({ customMessage: e.target.value })} placeholder="Use only when conditions require wording outside the approved preset." /></Field>
+              <div className="syncNotice"><strong>PRIMARY CUSTOMER MESSAGE</strong><span>{primary?.title}</span><p>Automatically synchronized to the selected Storm Status.</p></div>
+              <Field label="OPERATIONAL UPDATE — OPTIONAL"><select value={updateValue} onChange={(e) => selectOperationalUpdate(e.target.value)}>{config.operationalUpdates.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}</select></Field>
+              {updateValue === "custom" && <Field label="CUSTOM OPERATIONAL UPDATE" className="messageField"><textarea rows="4" maxLength="500" value={state.customMessage} onChange={(e) => patch({ customMessage: e.target.value })} placeholder="Describe the unusual condition or timing issue. The Storm Status headline will remain authoritative." /></Field>}
 
               <div className="quickActions">
-                <button onClick={() => addDelay(15)}>+15 MIN</button>
-                <button onClick={() => addDelay(30)}>+30 MIN</button>
-                <button onClick={() => patch({ delayMinutes: 60, timingPaused: false })}>+60 MIN</button>
-                <button className={state.timingPaused ? "warning active" : "warning"} onClick={() => patch({ timingPaused: !state.timingPaused })}>{state.timingPaused ? "RESUME TIMING" : "PAUSE TIMING"}</button>
+                <button type="button" onClick={() => addDelay(15)}>+15 MIN</button>
+                <button type="button" onClick={() => addDelay(30)}>+30 MIN</button>
+                <button type="button" onClick={() => patch({ delayMinutes: 60, timingPaused: false })}>+60 MIN</button>
+                <button type="button" className={state.timingPaused ? "warning active" : "warning"} onClick={() => patch({ timingPaused: !state.timingPaused })}>{state.timingPaused ? "RESUME TIMING" : "PAUSE TIMING"}</button>
               </div>
             </section>
 
@@ -198,8 +220,9 @@ export default function StormControlPage() {
               <section className="sideCard">
                 <div className="smallLabel">CUSTOMER VIEW PREVIEW</div>
                 <div className="previewCard">
-                  <div className="previewHead"><strong>{previewTitle(state, config)}</strong><span className="chip"><i />{config.statuses.find((s) => s.value === state.status)?.label}</span></div>
-                  <p>{state.customMessage.trim() || `Preset: ${preset?.label || "Service update"}`}</p>
+                  <div className="previewHead"><strong>{primary?.title || previewTitle(state, config)}</strong><span className="chip"><i />{primary?.chip || config.statuses.find((s) => s.value === state.status)?.label}</span></div>
+                  <p>{primary?.message || "SnowRescue service update."}</p>
+                  {updateText && <div className="previewUpdate"><strong>Operational update:</strong> {updateText}</div>}
                   <div className="previewMeta"><span>Conditions: {state.snowfall}</span><span>Areas: {state.activeAreas.join(", ") || "None selected"}</span><span>{state.timingPaused ? "Customer timing paused" : `Route delay: +${state.delayMinutes} min`}</span></div>
                 </div>
               </section>
