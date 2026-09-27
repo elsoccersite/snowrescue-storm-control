@@ -10,6 +10,17 @@ function api(path) {
   return `${root}${path}`;
 }
 
+async function readApiResponse(res) {
+  const text = await res.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    const short = text.replace(/\s+/g, " ").trim().slice(0, 180);
+    throw new Error(`Storm Control backend returned ${res.status}: ${short || "non-JSON response"}`);
+  }
+}
+
 function formatWhen(value) {
   if (!value) return "—";
   try {
@@ -40,7 +51,7 @@ export default function StormControlPage() {
     try {
       const res = await fetch(api("/api/admin/state"), { cache: "no-store", credentials: "same-origin" });
       if (res.status === 401) { setMode("login"); return; }
-      const data = await res.json();
+      const data = await readApiResponse(res);
       if (res.status === 503 && data.configurationRequired) { setMode("setup"); return; }
       if (!res.ok) throw new Error(data.error || "Unable to load Storm Control.");
       setUser(data.user);
@@ -49,7 +60,7 @@ export default function StormControlPage() {
       setSavedState(data.state);
       setMode("dashboard");
       const h = await fetch(api("/api/admin/history"), { cache: "no-store", credentials: "same-origin" });
-      if (h.ok) setHistory((await h.json()).history || []);
+      if (h.ok) setHistory((await readApiResponse(h)).history || []);
     } catch (e) {
       setError(e.message || "Unable to load Storm Control.");
       setMode("error");
@@ -68,7 +79,7 @@ export default function StormControlPage() {
         credentials: "same-origin",
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
+      const data = await readApiResponse(res);
       if (!res.ok) throw new Error(data.error || "Unable to sign in.");
       setPassword("");
       await load();
@@ -101,11 +112,11 @@ export default function StormControlPage() {
         credentials: "same-origin",
         body: JSON.stringify(state)
       });
-      const data = await res.json();
+      const data = await readApiResponse(res);
       if (!res.ok) throw new Error(data.error || "Unable to update Storm Desk.");
       setState(data.state); setSavedState(data.state);
       const h = await fetch(api("/api/admin/history"), { cache: "no-store", credentials: "same-origin" });
-      if (h.ok) setHistory((await h.json()).history || []);
+      if (h.ok) setHistory((await readApiResponse(h)).history || []);
     } catch (e) { setError(e.message); }
     finally { setBusy(false); }
   }
