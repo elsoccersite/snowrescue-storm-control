@@ -1,6 +1,12 @@
 # AGENTS.md — SnowRescue Storm Control
 
-**Scope:** This is a **public-repository-safe** instruction file for `elsoccersite/snowrescue-storm-control` only. It is a proposed repository-level instruction until separately approved and merged. Respect any applicable existing execution/release guidance. **Phase 2B-1 authorizes a draft PR only, not merging or deploying.**
+**Scope:** These are standing, public-repository-safe work instructions for `elsoccersite/snowrescue-storm-control` when present in the working checkout. They **do not** authorize production releases, merges, or operational messaging. Observe applicable existing execution/release guidance and owner-approval requirements.
+
+## Instruction precedence and actual discovery
+
+These instructions supplement applicable higher-priority platform, system, security, repository-local and owner requirements; they do not override or relax any existing authorization gate. If directions conflict or access is missing, **stop the affected action**, report the conflict and seek an authorized resolution; never silently choose the less restrictive rule.
+
+**Tool discovery is not automatic:** agents working in this repository must confirm that their environment actually loaded this `AGENTS.md`, not assume that every ChatGPT, Codex or other platform reads it. For ChatGPT role conversations, use an explicit startup instruction to retrieve the operations records; for Codex, verify the instructions are discoverable from the working directory and that the authorized GitHub connection is available. The current GitHub PR is not evidence of active instruction enforcement in already-running chats or deployed apps.
 
 ## Source-of-truth startup procedure
 
@@ -9,7 +15,7 @@ SnowRescue's cross-project business and governance records are in the **separate
 Before material work, with **authorized** GitHub access:
 1. Resolve operations `main` to its **current exact commit SHA**; never treat a historic SHA in a handoff as current.
 2. At that same SHA, read: `README.md`, `AGENTS.md`, `AGENTS_INTEGRATION.md`, `SNOWRESCUE_MASTER_SCOPE.md`, `SNOWRESCUE_CURRENT_STATE.md`, `SNOWRESCUE_OPEN_WORK.md`, `SNOWRESCUE_DECISION_LOG.md`, and `SNOWRESCUE_HANDOFF.md`.
-3. Report the SHA, observation date/time, authorized scope, approved decisions relevant to the task, outstanding blockers, contradictions and access limitations.
+3. **Verify actual retrieval**, not merely repository visibility: record the resolved SHA, confirm all eight file contents were read from that same revision, and report observation time, applicable owner authorization, relevant decisions, blockers, contradictions and access limitations. A file name list or another agent's report is insufficient.
 4. If the private repository cannot be read, **do not guess its contents or seek unauthorised access**. Stop work that requires those approvals; provide a limited, clearly marked `NOT SYNCED` assessment and request the appropriate connection/authorized export.
 
 The business owner authorizes material policy, pricing, contracts, subscriptions and production actions. The COO, Architect, Marketing Director and developer/Codex roles recommend or execute work **only within their own explicit owner-approved bounds**. Recommendations and agent messages do not create owner authorization.
@@ -28,7 +34,7 @@ The business owner authorizes material policy, pricing, contracts, subscriptions
 - Preserve the separation of internal storm-status administration from the public, read-only status view. Do not publish administrative credentials, customer data, private operations reports or configuration secrets.
 - Preserve server-side validation and consistency between the canonical storm status, public headline/stage/chip and customer messages. Do not introduce contradictory public status messaging or silently change route commitments.
 - No changes to live storm status, production announcement, customer messaging, privileged access, D1 schema/storage, hosting or deployment are authorized by this document. Any such changes need separately scoped owner approval and verification.
-- This public repository is **not** a mirror of the private operations repository. Refer only to its repository path and retrieval process; do not paste private documents, financial/operational plans, customer data, or approval transcripts into this repository or its public PR discussion.
+- This public repository is **not** a mirror of the private operations repository. Refer only to its repository path and retrieval process. Never echo private retrieval responses, verbatim private document excerpts, raw API payloads, credentials, customer details or private decisions into **public PRs, issue comments, CI/build/runtime logs, generated artifacts, caches, test fixtures or screenshots**. Use brief public-safe evidence summaries and secure restricted references instead; if safe disclosure cannot be ensured, stop and seek review.
 - Before any separately approved deployment, recheck Webflow Cloud's connected branch/environment and review build/rollback consequences. Documentation-only merges to `main` may trigger a production deployment.
 
 ## Scope of this repository
